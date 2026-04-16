@@ -50,6 +50,34 @@ class InferenceService:
             for model_data in CLASSIFICATION_MODELS.values()
         ]
     
+    def _build_architecture(self, architecture: str):
+        """Build an untrained model with the correct output head for the given architecture."""
+        num_classes = len(CLASS_NAMES)
+        arch = architecture.lower().replace("-", "").replace("_", "")
+        if arch == "mobilenetv2":
+            model = models.mobilenet_v2(weights=None)
+            # Custom head used during training:
+            # classifier.0 = Dropout
+            # classifier.1 = Linear(1280, 512)
+            # classifier.2 = ReLU
+            # classifier.3 = Dropout
+            # classifier.4 = Linear(512, num_classes)
+            model.classifier = nn.Sequential(
+                nn.Dropout(p=0.2, inplace=False),
+                nn.Linear(model.last_channel, 512),
+                nn.ReLU(inplace=True),
+                nn.Dropout(p=0.2, inplace=False),
+                nn.Linear(512, num_classes)
+            )
+        elif arch == "efficientnetb0":
+            model = models.efficientnet_b0(weights=None)
+            model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+        else:
+            # Default to ResNet50
+            model = models.resnet50(weights=None)
+            model.fc = nn.Linear(model.fc.in_features, num_classes)
+        return model
+    
     def load_model(self, model_id: str) -> ClassificationModel:
         """Load a classification model by ID"""
         if model_id in self._loaded_models and self._loaded_models[model_id].is_loaded:
@@ -67,9 +95,9 @@ class InferenceService:
         if not os.path.exists(weights_path):
             raise FileNotFoundError(f"Model weights not found: {weights_path}")
         
-        # Create ResNet50 architecture
-        pytorch_model = models.resnet50(weights=None)
-        pytorch_model.fc = nn.Linear(pytorch_model.fc.in_features, len(CLASS_NAMES))
+        # Build the correct architecture based on config
+        architecture = model_config.get("architecture", "ResNet50")
+        pytorch_model = self._build_architecture(architecture)
         
         # Load weights
         state_dict = torch.load(weights_path, map_location=self._device)

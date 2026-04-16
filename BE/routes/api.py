@@ -7,7 +7,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from services import inference_service, explainability_service, image_service
+from services import inference_service, explainability_service, image_service, db_service
 from config import CLASS_NAMES, CLASS_FULL_NAMES
 
 
@@ -88,6 +88,99 @@ def get_images():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@api.route('/sample-images', methods=['GET'])
+def get_sample_images():
+    """List sample test images available on the server"""
+    try:
+        from config import STATIC_DIR
+        sample_dir = os.path.join(STATIC_DIR, 'sample-images')
+        os.makedirs(sample_dir, exist_ok=True)
+        
+        images = []
+        for filename in os.listdir(sample_dir):
+            if filename.split('.')[-1].lower() in {'png', 'jpg', 'jpeg'}:
+                images.append({
+                    "id": filename.split('.')[0], 
+                    "filename": filename,
+                    "url": f"/static/sample-images/{filename}",
+                    "source": "sample"
+                })
+                
+        return jsonify({
+            "success": True,
+            "data": images,
+            "count": len(images)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@api.route('/synthetic-images', methods=['GET'])
+def get_synthetic_images():
+    """Fetch paginated synthetic images from Cloudinary"""
+    import cloudinary
+    import cloudinary.api
+    import cloudinary.search
+    
+    # Optional manual config if url is not present
+    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+    api_key = os.getenv('CLOUDINARY_API_KEY')
+    api_secret = os.getenv('CLOUDINARY_API_SECRET')
+    
+    if cloud_name and api_key and api_secret:
+        cloudinary.config(
+            cloud_name=cloud_name,
+            api_key=api_key,
+            api_secret=api_secret
+        )
+    
+    try:
+        folder = request.args.get('folder', 'synthetic') # The folder name to filter by
+        next_cursor = request.args.get('next_cursor', None)
+        max_results = int(request.args.get('max_results', 20))
+        
+        # Build search expression
+        expression = ""
+        if folder and folder.lower() != 'all':
+            expression = f'folder="{folder}"'
+            
+        search = cloudinary.search.Search()\
+            .expression(expression)\
+            .sort_by('created_at', 'desc')\
+            .max_results(max_results)
+            
+        if next_cursor:
+            search = search.next_cursor(next_cursor)
+            
+        result = search.execute()
+        
+        images = []
+        for resource in result.get('resources', []):
+            images.append({
+                'id': resource.get('asset_id'),
+                'public_id': resource.get('public_id'),
+                'url': resource.get('secure_url'),
+                'format': resource.get('format'),
+                'created_at': resource.get('created_at'),
+                'folder': resource.get('folder')
+            })
+            
+        return jsonify({
+            "success": True,
+            "data": images,
+            "next_cursor": result.get('next_cursor'),
+            "total_count": result.get('total_count', 0)
+        })
+    except Exception as e:
+        # Check if error is related to missing auth
+        if "Must supply api_key" in str(e):
+            return jsonify({
+                "success": False,
+                "error": "Cloudinary credentials missing. Please configure CLOUDINARY_URL in backend .env file."
+            }), 401
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @api.route('/images/upload', methods=['POST'])
 def upload_image():
     """Upload a dermoscopic image"""
@@ -100,6 +193,14 @@ def upload_image():
             return jsonify({"success": False, "error": "No selected file"}), 400
         
         lesion_image = image_service.upload_image(file)
+        
+        # Save to database
+        db_service.save_image_upload(
+            image_id=lesion_image.id,
+            filename=lesion_image.filename,
+            image_url=f"/uploads/{lesion_image.filename}"
+        )
+        
         return jsonify({
             "success": True,
             "data": lesion_image.to_dict(),
@@ -145,6 +246,15 @@ def predict():
             result.predicted_class, result.predicted_class
         )
         
+        # Save prediction results to DB
+        db_service.save_prediction(
+            image_id=image_id,
+            model_id=model_id,
+            prediction=response_data['predicted_class_name'],
+            confidence=result.confidence,
+            probabilities=result.class_probabilities
+        )
+        
         return jsonify({
             "success": True,
             "data": response_data
@@ -171,6 +281,7 @@ def explain():
         image_id = data.get('image_id')
         model_id = data.get('model_id')
         target_class = data.get('target_class')  # Optional
+        method = data.get('method', 'gradcam') # Optional, defaults to gradcam
         
         if not image_id or not model_id:
             return jsonify({
@@ -183,14 +294,38 @@ def explain():
         if not image_path:
             return jsonify({"success": False, "error": "Image not found"}), 404
         
-        # Generate Grad-CAM
+        # Generate Explanation (Grad-CAM or Grad-CAM++)
         result = explainability_service.generate_gradcam(
-            image_path, model_id, target_class
+            image_path, model_id, target_class, method
+        )
+        
+        result_dict = result.to_dict()
+        
+        # Save map URL to DB
+        db_service.update_gradcam(
+            image_id=image_id,
+            gradcam_url=result_dict.get('overlay_path')
         )
         
         return jsonify({
             "success": True,
-            "data": result.to_dict()
+            "data": result_dict
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============== History / DB ==============
+
+@api.route('/history', methods=['GET'])
+def get_prediction_history():
+    """Get history of uploaded images and predictions"""
+    try:
+        history = db_service.get_history()
+        return jsonify({
+            "success": True,
+            "data": history,
+            "count": len(history)
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
