@@ -1,0 +1,9 @@
+data/
+node_modules/
+dist/
+__pycache__/
+.env
+.venv
+.env.local
+*.pth
+*.ckpt

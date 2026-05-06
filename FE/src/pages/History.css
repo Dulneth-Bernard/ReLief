@@ -1,0 +1,295 @@
+/* ── History Page ─────────────────────────────────────── */
+.history-container {
+    padding: 2rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Header */
+.history-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color, #334155);
+}
+
+.history-header h2 {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--text-primary, #f1f5f9);
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.history-header p {
+    color: var(--text-secondary, #94a3b8);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ── States ───────────────────────────────────────────── */
+.loading-state,
+.error-state,
+.history-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+    text-align: center;
+    gap: 1rem;
+    color: var(--text-secondary, #94a3b8);
+}
+
+.loader {
+    width: 44px;
+    height: 44px;
+    border: 3px solid var(--border-color, #334155);
+    border-top-color: var(--primary-500, #3b82f6);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.error-message {
+    color: #f87171;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.retry-btn {
+    padding: 0.65rem 1.4rem;
+    background: var(--primary-500, #3b82f6);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.retry-btn:hover {
+    background: var(--primary-600, #2563eb);
+    transform: translateY(-1px);
+}
+
+.history-empty-state p {
+    color: var(--text-secondary, #94a3b8);
+    font-size: 1.05rem;
+    max-width: 380px;
+}
+
+/* ── Grid ─────────────────────────────────────────────── */
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+    gap: 1.5rem;
+}
+
+/* ── Card ─────────────────────────────────────────────── */
+.history-card {
+    background: var(--bg-dark-secondary, #1e293b);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.history-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Images strip ─────────────────────────────────────── */
+.history-card-images {
+    display: flex;
+    border-bottom: 1px solid var(--border-color, #334155);
+    background: #0f172a;
+    height: 170px;
+}
+
+.history-image-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border-color, #334155);
+    padding: 8px;
+    overflow: hidden;
+}
+
+.history-image-wrapper:last-child {
+    border-right: none;
+}
+
+.history-image-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.72);
+    /* High-contrast white on dark overlay — passes WCAG AA */
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    text-align: center;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.history-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.history-placeholder-img {
+    /* Sufficient contrast: #64748b on #1e293b ≈ 4.6:1 */
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: #0f172a;
+    border-radius: 4px;
+    text-align: center;
+    padding: 0.5rem;
+}
+
+/* ── Card details ─────────────────────────────────────── */
+.history-card-details {
+    padding: 0.75rem 1rem;
+}
+
+.history-chips-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+    overflow: hidden;
+}
+
+.history-chips-footer {
+    margin-bottom: 0;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--border-color, #334155);
+    font-size: 0.78rem;
+}
+
+.history-chips-row:last-child {
+    margin-bottom: 0;
+}
+
+.history-detail-label {
+    /* #94a3b8 on dark bg ≈ 4.8:1 — passes AA */
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding-top: 2px;
+}
+
+.history-detail-value {
+    font-size: 0.85rem;
+    /* High-contrast primary text */
+    color: #e2e8f0;
+    font-weight: 500;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+/* ── Plain text values ──────────────────────────────── */
+.history-plain-value {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    text-align: right;
+}
+
+/* Prediction — positive result */
+.prediction-positive {
+    color: #34d399;
+    font-weight: 600;
+}
+
+/* Prediction — pending/no result */
+.prediction-pending {
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Confidence */
+.confidence-value {
+    color: #60a5fa;
+    font-weight: 700;
+}
+
+/* Date */
+.date-value {
+    color: #94a3b8;
+    font-size: 0.82rem;
+}
+
+/* ── Animations ───────────────────────────────────────── */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Mobile breakpoints ───────────────────────────────── */
+@media (max-width: 768px) {
+    .history-container {
+        padding: 1.25rem 1rem;
+    }
+
+    .history-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .history-card-images {
+        height: 140px;
+    }
+
+    .history-card-details {
+        padding: 1rem;
+    }
+
+    .history-detail-value {
+        text-align: right;
+    }
+
+    .model-badge {
+        max-width: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .history-header h2 {
+        font-size: 1.35rem;
+    }
+
+    .history-card-images {
+        height: 120px;
+    }
+
+    .history-image-label {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+    }
+}

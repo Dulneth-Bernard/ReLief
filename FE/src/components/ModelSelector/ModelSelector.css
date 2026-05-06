@@ -1,0 +1,209 @@
+/* ── Model Selector Card ────────────────────────────── */
+.model-selector {
+    height: 100%;
+}
+
+.model-selector-loading,
+.model-selector-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    gap: var(--space-md);
+}
+
+/* Header right cluster */
+.model-selector-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.carousel-counter {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Carousel ────────────────────────────────────────── */
+.carousel-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.carousel-slide {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    /* Smooth height transitions when slide changes */
+    animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(8px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Model Card ──────────────────────────────────────── */
+.model-item {
+    padding: var(--space-lg);
+    background: var(--bg-dark-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.model-item:hover {
+    border-color: var(--primary-400);
+    transform: translateX(4px);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.model-item.selected {
+    border-color: var(--primary-500);
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.model-item-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+}
+
+.model-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.model-acc-badge {
+    font-size: 0.68rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.model-description {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.model-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.model-arch {
+    color: var(--text-muted);
+}
+
+/* Metric chips row */
+.model-metrics-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.metric-chip {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* ── Navigation ──────────────────────────────────────── */
+.carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding-top: var(--space-sm);
+}
+
+.carousel-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: var(--bg-dark-secondary);
+    color: var(--text-primary);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-btn:hover:not(:disabled) {
+    border-color: var(--primary-400);
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary-400);
+}
+
+.carousel-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* Dots */
+.carousel-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: var(--border-color);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.carousel-dot.active {
+    background: var(--primary-500);
+    width: 22px;
+    border-radius: 4px;
+}
+
+.carousel-dot:hover:not(.active) {
+    background: var(--primary-400);
+    opacity: 0.6;
+}
+
+/* Badge variants */
+.badge-secondary {
+    background: rgba(100, 116, 139, 0.2);
+    color: var(--text-secondary);
+}
+
+.badge-warning {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}

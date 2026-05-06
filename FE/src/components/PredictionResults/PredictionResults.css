@@ -1,0 +1,171 @@
+.prediction-results {
+    height: 100%;
+}
+
+.results-loading,
+.results-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    min-height: 200px;
+}
+
+.primary-prediction {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    background: var(--bg-dark-secondary);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.prediction-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-xl);
+    color: white;
+    flex-shrink: 0;
+}
+
+.prediction-class {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.prediction-confidence {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.prediction-details h4 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 1.25rem;
+}
+
+.probability-chart {
+    margin-bottom: var(--space-xl);
+}
+
+.chart-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.probability-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.probability-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.probability-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.probability-class {
+    font-weight: 600;
+    font-size: 0.875rem;
+    width: 50px;
+}
+
+.probability-name {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.probability-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.probability-bar {
+    height: 8px;
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.probability-value {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    width: 50px;
+    text-align: right;
+}
+
+.heatmap-section {
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.heatmap-container {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-dark-secondary);
+}
+
+.heatmap-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .probability-label {
+        width: 100px;
+    }
+
+    .probability-name {
+        display: none;
+    }
+
+    .primary-prediction {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: center;
+        gap: var(--space-md);
+    }
+
+    .prediction-badge {
+        width: 100%;
+        height: auto;
+        padding: var(--space-md) 0;
+        flex-direction: row;
+        gap: var(--space-md);
+        border-radius: var(--radius-md);
+    }
+
+    .prediction-details {
+        width: 100%;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
